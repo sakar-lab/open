@@ -1,0 +1,3 @@
+/home/sakar/tryingcpp/cmake-build-debug/CMakeFiles/open.dir
+/home/sakar/tryingcpp/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/sakar/tryingcpp/cmake-build-debug/CMakeFiles/rebuild_cache.dir
