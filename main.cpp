@@ -89,6 +89,11 @@ std::string getCurrentDirectory() {
 
 int main(const int argc, char* argv[]) {
     auto cfg = configReader(getUserConfigPath(), std::list<std::string>{"ide", "path"});
+    if (argc > 1 && std::string(argv[1]) == "--commands") {
+        std::cout << "-a\n" << cfg.getAllProjName();
+        return 0;
+    }
+
     if (argc < 2) {
         std::cerr << "Usage: " << argv[0] << " <program name>\n";
         std::cout << "To put more run with "<< argv[0] << " -a\n";
