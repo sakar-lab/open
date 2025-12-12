@@ -141,14 +141,14 @@ class configManager {
         }
         return false;
     }
-    bool isheader(string &text) {
+    static bool isheader(const string &text) {
+        if (text.empty()) return false;
         return text.front() == '[' && text.back() == ']';
     }
 
-    bool findHeader(queue<string>& text) {
+    static bool findHeader(queue<string>& text) {
         while (!text.empty()) {
-            std::string& line = text.front();
-            if (!line.empty() && isheader(line)) {
+            if (std::string& line = text.front(); !line.empty() && isheader(line)) {
                 return true;
             }
             text.pop();
@@ -156,7 +156,7 @@ class configManager {
         return false;
     }
 
-    bool blockParse(queue<string> &block, configDataT &output) {
+    bool blockParse(queue<string> &block, configDataT &output) const {
         if (block.empty()) return false;
         if(findHeader(block)) {
             configDataT tmp;
@@ -234,7 +234,7 @@ int main(int argc, char* argv[]) {
     configDataT data = cfg.getConfigFor(argv[1]).value();
 
 
-    cout << cfg.toString() << endl;
+    //cout << cfg.toString() << endl;
 
     start_in_background(data.settings["ide"],{data.settings["path"]});
 
