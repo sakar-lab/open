@@ -9,7 +9,7 @@
 class configWriter {
     std::string fileLoc;
     public:
-    configWriter(const std::string &fileLoc){
+    explicit configWriter(const std::string &fileLoc){
         this->fileLoc = fileLoc;
     }
 
@@ -25,7 +25,7 @@ class configWriter {
         }
         file << header;
 
-        for (auto &[key, value]: config_data.settings) {
+        for (const auto& [key, value]: config_data.settings) {
             if (!value.empty() && !key.empty()) {
                 file << key << "=" << value << "\n";
             }

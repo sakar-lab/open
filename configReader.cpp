@@ -1,5 +1,6 @@
 #include "configReader.h"
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <ostream>
@@ -94,19 +95,18 @@ bool configReader::ReadConfig() {
     return true;
 }
 
-bool configReader::isSettingtype(std::string &text) {
-    for (auto &settings: settingTypes) {
-        if (text.starts_with(settings)) {
-            return true;
-        }
-    }
-    return false;
+bool configReader::isSettingtype(const std::string &text) const
+{
+    return std::ranges::any_of(settingTypes, [&](const std::string_view s) {
+       return text.starts_with(s);
+   });
 }
 
-bool configReader::makeBlock(std::queue<std::string> &input, std::queue<std::string> &output) {
+bool configReader::makeBlock(std::queue<std::string> &input, std::queue<std::string> &output) const
+{
     while (!input.empty()) {
         if (findHeader(input)) {
-            output.push(input.front());
+            output.push(input.front()); //alloced at
             input.pop();
             while (!input.empty()) {
                 if (!isSettingtype(input.front())) {
@@ -125,7 +125,7 @@ bool configReader::makeBlock(std::queue<std::string> &input, std::queue<std::str
     return false;
 }
 
-bool configReader::isheader(std::string &text) {
+bool configReader::isheader(const std::string &text) {
     if (text.empty()) {
         return false;
     }
@@ -134,8 +134,7 @@ bool configReader::isheader(std::string &text) {
 
 bool configReader::findHeader(std::queue<std::string> &text) {
     while (!text.empty()) {
-        std::string& line = text.front();
-        if (!line.empty() && isheader(line)) {
+        if (std::string& line = text.front(); !line.empty() && isheader(line)) {
             return true;
         }
         text.pop();
@@ -143,29 +142,32 @@ bool configReader::findHeader(std::queue<std::string> &text) {
     return false;
 }
 
-bool configReader::blockParse(std::queue<std::string> &block, configDataT &output) {
+bool configReader::blockParse(std::queue<std::string> &block,
+                              configDataT &output) const
+{
     if (block.empty()) return false;
-    if(findHeader(block)) {
-        configDataT tmp;
-        std::string &front = block.front();
-        front.pop_back();
-        front.erase(front.begin());
-        tmp.projName = front;
+    if (!findHeader(block)) return false;
+    configDataT tmp;
+
+    std::string header = block.front();
+    block.pop();
+
+    header.pop_back();
+    header.erase(header.begin());
+    tmp.projName = header;
+
+    while (!block.empty()) {
+        std::string line = block.front();
         block.pop();
 
-
-        while (!block.empty()) {
-            for (auto&key : settingTypes) {
-                front = block.front();
-                if (front.starts_with(key)) {
-                    front.erase(0,key.length() + 1); // +1 for =
-                    tmp.settings.insert_or_assign(key, front);
-                }
+        for (const auto& key : settingTypes) {
+            if (line.starts_with(key)) {
+                tmp.settings[key] = line.substr(key.length() + 1);
+                break;
             }
-            block.pop();
         }
-        output = tmp;
-        return true;
     }
-    return false;
+    output = std::move(tmp);
+    return true;
 }
+

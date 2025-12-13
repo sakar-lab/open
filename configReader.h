@@ -26,11 +26,11 @@ private:
     std::list<configDataT> configs;
     std::list<std::string> settingTypes;
     bool ReadConfig();
-    bool isSettingtype(std::string &text);
-    bool makeBlock(std::queue<std::string> &input, std::queue<std::string> &output);
-    bool isheader(std::string &text);
-    bool findHeader(std::queue<std::string>& text);
-    bool blockParse(std::queue<std::string> &block, configDataT &output);
+    [[nodiscard]] bool isSettingtype(const std::string &text) const;
+    bool makeBlock(std::queue<std::string> &input, std::queue<std::string> &output) const;
+    static bool isheader(const std::string &text);
+    static bool findHeader(std::queue<std::string>& text);
+    bool blockParse(std::queue<std::string> &block, configDataT &output) const;
 };
 
 
