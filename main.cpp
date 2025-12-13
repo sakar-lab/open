@@ -118,7 +118,7 @@ int main(const int argc, char* argv[]) {
     }
     configDataT data = cfg.getConfigFor(argv[1]);
     if (data.projName.empty()) {
-        std::cerr << "Couldn't find the given test\n";
+        std::cerr << "Couldn't find the given Project\n";
         return 1;
     }
 
